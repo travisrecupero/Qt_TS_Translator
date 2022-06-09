@@ -9,21 +9,33 @@ Automating the translation process by running a script that utilizes multiple on
 ## Usage
 The following instructions mainly are for WSL command line users running Win10. If you have Python and Poetry, skip to step 4.
 1. Install the latest version of Python on your machine. 
-2. First run `curl -sSL https://raw.githubusercontent.com/python-poetry/poetry/master/get-poetry.py | python -
-` to install Poetry
+2. Follow https://python-poetry.org/docs/ to install Poetry
     - Test to verify its installed with `poetry --version`
     - You can also run `where poetry` which should output ->  C:\Users\your_username\AppData\Local\Programs\Python\Python39\Scripts\poetry.exe depending on where your python is installed.
     - If recieving error: `bash: poetry: command not found`, try the following:
         - Add Poetry's bin directory (C:\Users\your_username\AppData\Roaming\Python\Scripts) in your `PATH`
 environment variable.
-3. Run `poetry install` to install dependencies from the `poetry.lock` (file included in the repo). This will update your `poetry.toml` file.
-4. Lastly, run `poetry run python main.py`, the run command executes the given command inside the project’s virtualenv.
+3. Once Python and Poetry installed, run 
+```bash
+$ poetry install
+# Installs dependencies from the `poetry.lock` (file included in the repo). This will update your `poetry.toml` file.
+```
+
+
+
+5. Lastly, run 
+```bash
+$ poetry run python main.py 
+# The run command executes the given command inside the project’s virtualenv.
+```
 
 _If you run into dependency or Poetry issues please refer to https://python-poetry.org/docs/._
 
 
 In Qt, run the following commands:
-1. If you are using the finished .ts included in the repo then skip to step 2. Depending on the name of your .pro and the name you want for your .ts files, this command will use different arugments (they should generally be the same). This generates .ts files based on your .ui files.
+![image](https://user-images.githubusercontent.com/31936622/172896457-af01a972-4579-40cb-9e82-c0a4db97af53.png)
+
+1. If you are using the finished .ts included in the repo then skip to step 2.. Depending on the name of your .pro and the name you want for your .ts files, the following command will use different arugments (they should generally be the same). This generates .ts files based on your .ui files.
 - `lupdate Appplication.pro -ts t1_fr.ts t1_sp.ts`
 2. The following command will generate .qm files based off of .ts files. These .qm's will give Qt binary files to compile with.
 - `lrelease t1_fr.ts t1_sp.ts`
