@@ -1,0 +1,4 @@
+numpy==1.21.0
+requests==2.26.0
+lxml==4.6.3
+deep-translator==1.5.5

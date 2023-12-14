@@ -1,52 +1,56 @@
 # QT_TS_Translator
 
 ## Application Statement
-Qt applications can generate translation files (`.ts` files). The files are in an XML format and they are turned into binary files (`.qm` files). The `.qm`s let Qt read the XML and insert translations where they are needed. Normally, companies hire translators (unless they have in-house translators), who will use Qt Linguist. Qt Linguist is a software that reads .ts files and allows the translator to manually insert translations. 
+
+Qt applications create translation files (`.ts` files) in XML format, later converted to binary (`.qm` files). These files enable Qt to incorporate translations where needed. Traditionally, translators use Qt Linguist software to manually insert translations, often employed by companies unless they have in-house translators.
 
 ## Purpose
-Automating the translation process by running a script that utilizes multiple online translation APIs. This will produce _finished_ .ts files for Qt applications. 
+
+This tool automates translations by leveraging multiple online translation APIs. It aims to produce finalized `.ts` files for Qt applications.
 
 ## Usage
-The following instructions mainly are for WSL command line users running Win10. If you have Python and Poetry, skip to step 4.
-1. Install the latest version of Python on your machine. 
-2. Follow https://python-poetry.org/docs/ to install Poetry
-    - Test to verify its installed with `poetry --version`
-    - You can also run `where poetry` which should output ->  C:\Users\your_username\AppData\Local\Programs\Python\Python39\Scripts\poetry.exe depending on where your python is installed.
-    - If recieving error: `bash: poetry: command not found`, try the following:
-        - Add Poetry's bin directory (C:\Users\your_username\AppData\Roaming\Python\Scripts) in your `PATH`
-environment variable.
-3. Once Python and Poetry installed, run 
-```bash
-$ poetry install
-# Installs dependencies from the `poetry.lock` (file included in the repo). This will update your `poetry.toml` file.
-```
 
+### Prerequisites
 
+1. Ensure you have Python 3.8 or higher installed.
 
-5. Lastly, run 
-```bash
-$ poetry run python main.py 
-# The run command executes the given command inside the project’s virtualenv.
-```
+2. Install dependencies using `pip`:
 
-_If you run into dependency or Poetry issues please refer to https://python-poetry.org/docs/._
+    ```bash
+    pip install -r requirements.txt
+    ```
 
+### Steps
 
-In Qt, run the following commands:
-![image](https://user-images.githubusercontent.com/31936622/172896457-af01a972-4579-40cb-9e82-c0a4db97af53.png)
+1. Run the tool:
 
-1. If you are using the finished .ts included in the repo then skip to step 2.. Depending on the name of your .pro and the name you want for your .ts files, the following command will use different arugments (they should generally be the same). This generates .ts files based on your .ui files.
-- `lupdate Appplication.pro -ts t1_fr.ts t1_sp.ts`
-2. The following command will generate .qm files based off of .ts files. These .qm's will give Qt binary files to compile with.
-- `lrelease t1_fr.ts t1_sp.ts`
+    ```bash
+    python main.py
+    ```
 
-## For Developer
+This executes the translation process within the project's environment.
 
--   please note that https://github.com/nidhaloff/deep-translator API only allows 5k _character_ translations per API call. Therefore, we shall make use of dividing lists into chunks, then later flattening the list back to normal.
--   the program has a slow runtime due to the API calls; we `sleep(1)` between each string translation and `sleep(random.uniform(7, 10))` between each sublist. 
--   The `.\translations\unfinished` folder contains sample `.ts` files. After execution, there will be `.ts` files created in `\translations\finished`. There you will find files identical to those contained in `\translations\unfinished`, BUT with translations inserted on every line that contained `<translation type="unfinished"></translation>`. I left `\translations\unfinished` to show the expected output.
--   if there is a timeout or a translation cannot be found we default to English
--   `constants.py` can be used to ignore or transliterate certain strings during translation. Transliteration lets us manipulate the string before translating to get better translations. (Sometimes a sentence in English can be one character or fewer words in another language.)
--   deep_translator API is buggy with Spanish and Chinese, so for those translations we use Microsoft Translator from Azure. The API key can be stored in `secrets.py`. Microsoft Translator costs money, so if you want free translations comment out the lines using `str_to_spanish(string)` and `str_to_chinese(string)`. (deep_translator may work now)
+### Qt Commands
 
-The documentation to this translation API can be found here: https://github.com/nidhaloff/deep-translator
+In Qt, follow these commands:
+
+1. Use the following command (if not using provided `.ts` files):
+
+    `lupdate Appplication.pro -ts t1_fr.ts t1_sp.ts`
+    
+    This generates .ts files from your .ui files.
+
+2. Generate .qm files from .ts files:
+
+    `lrelease t1_fr.ts t1_sp.ts`
+
+## Developer Notes
+
+- The tool uses nidhaloff/deep-translator API, which has a 5k character limit per API call.
+- Due to API calls, the program has a slow runtime. It adds a delay (`sleep(1)`) between string translations and (`sleep(random.uniform(7, 10))`) between each sublist.
+- Find sample `.ts` files in `.\translations\unfinished`. After execution, finished `.ts` files will appear in `\translations\finished`, containing translations in lines initially tagged as `<translation type="unfinished"></translation>`.
+- In cases of timeout or unavailable translations, English defaults.
+- Use constants.py to ignore or transliterate certain strings before translation for better results.
+- For Spanish and Chinese translations, the tool uses Microsoft Translator from Azure due to issues with deep_translator API. Store the API key in secrets.py. To use free translations, comment out lines utilizing str_to_spanish(string) and str_to_chinese(string).
+  - this may change once issues are resolved in `deep-translator`
+- Refer to the API documentation for details on the translation API.
