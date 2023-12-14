@@ -1,5 +1,12 @@
 # QT_TS_Translator
 
+## Overview
+This tool was initially developed as a work project but found practical use beyond its original scope. Please note that the code hosted here might not reflect the most recent updates or improvements. The most up-to-date code resides in my organization's GitLab repository.
+
+The current, up-to-date version of this tool has evolved into a command-line interface (CLI) version integrated into our CI/CD pipeline. It runs translations on a schedule, ensuring that our applications are consistently updated with accurate translations. This evolved version addresses prior caveats related to Spanish and Chinese translations, providing a more robust and reliable solution.
+
+If you are seeking the latest version or wish to contribute, please open an issue or reach out for information on the current codebase available within my organization's infrastructure and boundaries.
+
 ## Application Statement
 
 Qt applications create translation files (`.ts` files) in XML format, later converted to binary (`.qm` files). These files enable Qt to incorporate translations where needed. Traditionally, translators use Qt Linguist software to manually insert translations, often employed by companies unless they have in-house translators.
