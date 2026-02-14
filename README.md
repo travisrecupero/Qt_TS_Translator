@@ -10,7 +10,7 @@ Qt applications create translation files (`.ts` files) in XML format, later conv
 
 ## Purpose
 
-This tool automates translations by leveraging multiple online translation APIs. It aims to produce finalized `.ts` files for any Qt application.
+This tool automates translations using Google Translate (via [deep-translator](https://github.com/nidhaloff/deep-translator)). It aims to produce finalized `.ts` files for any Qt application.
 
 ## Usage
 
@@ -80,16 +80,6 @@ The tool automatically detects the target language for each `.ts` file by:
 
 Files whose language cannot be determined are skipped with a warning.
 
-### Azure Translator (Optional)
-
-By default, all languages are translated using Google Translate (via deep-translator). If you have a Microsoft Azure Translator API key, the tool will automatically use it for Chinese and Spanish translations for better quality. Create a `secrets.py` file:
-
-```python
-subscription_key = "your-azure-subscription-key"
-```
-
-This is entirely optional. Without it, Google Translate is used for all languages.
-
 ### Qt Commands
 
 In Qt, follow these commands:
@@ -104,8 +94,8 @@ In Qt, follow these commands:
 
 ## Developer Notes
 
-- The tool uses nidhaloff/deep-translator API, which has a 5k character limit per API call. The number of sublists is calculated dynamically based on content size.
-- Due to API calls, the program has a slow runtime. It adds a delay (`sleep(1)`) between string translations and (`sleep(random.uniform(7, 10))`) between each sublist.
+- The tool uses [nidhaloff/deep-translator](https://github.com/nidhaloff/deep-translator) which has a ~5k character limit per individual string. UI strings are typically well under this limit.
+- Due to API calls, the program has a slow runtime. It adds a random delay (`sleep(0.5-1.5s)`) between string translations to avoid rate limiting.
 - Sample `.ts` files are in `./translations/unfinished`. After execution, finished `.ts` files appear in `./translations/finished`, with translations in lines initially tagged as `<translation type="unfinished"></translation>`.
 - In cases of timeout or unavailable translations, English defaults are used.
 - Use `constants.py` or a `--config` JSON file to ignore or transliterate certain strings before translation.
