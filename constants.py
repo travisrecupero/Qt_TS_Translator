@@ -1,49 +1,15 @@
-NUM_OF_SUBLISTS = 64
+# Maximum characters per sublist (deep-translator API limit is ~5000)
+MAX_CHARS_PER_SUBLIST = 4500
 
-IGNORE_STRINGS = {'M1553':'M1553',
-                'AC':'AC',
-                'AD':'AD',
-                'AR':'AR',
-                'AVMS':'AVMS',
-                'CAN':'CAN',
-                'DA':'DA',
-                'DIF':'DIF',
-                'DL':'DL',
-                'DS':'DS',
-                'DSW':'DSW',
-                'DT':'DT',
-                'ESW':'ESW',
-                'LVDT':'LVDT',
-                'PS':'PS',
-                'RLY':'RLY',
-                'RTD':'RTD',
-                'SD':'SD',
-                'SER':'SER',
-                'SG':'SG',
-                'TC':'TC',
-                'TTL':'TTL',
-                'https://www.naii.com/':'https://www.naii.com/',
-                'NIU1A':'NIU1A',
-                'NIU3A':'NIU3A',
-                'NIU3E':'NIU3E',
-                '68ARM1':'68ARM1',
-                '68ARM2':'68ARM2',
-                '64G5':'64G5',
-                '68G5':'68G5',
-                '67G6':'67G6',
-                '67PPC2':'67PPC2',
-                '68PPC2':'68PPC2',
-                '68DT1':'68DT1',
-                '68CB6':'68CB6',
-                '75G5/75ARM1':'75G5/75ARM1',
-                '79G5':'79G5',
-                '75INT2':'75INT2',
-                }
+# Strings that should not be translated (e.g., product codes, technical terms).
+# Add project-specific terms here directly, or load from a JSON config file via --config.
+# Format: {'TERM': 'TERM', ...}
+IGNORE_STRINGS = {}
 
-TRANSLITERATE_STRINGS = {'Hex': 'Hexadecimal',
-                         'hex': 'hexadecimal',
-                         'Hi': 'High',
-                         'Lo': 'Low'}
+# Abbreviations to expand before translation.
+# Add project-specific mappings here directly, or load from a JSON config file via --config.
+# Format: {'abbreviation': 'full word', ...}
+TRANSLITERATE_STRINGS = {}
 
 ORIGINAL_TS_PATH = './translations/unfinished/'
 NEW_TS_PATH = './translations/finished/'
