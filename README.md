@@ -14,7 +14,35 @@ This tool automates translations using Google Translate (via [deep-translator](h
 
 ## Usage
 
-### Prerequisites
+### Dev Container (Recommended)
+
+The project includes a dev container with Python, deep-translator, and Qt linguist tools (`lupdate`, `lrelease`, `lconvert`) pre-installed.
+
+**VS Code:** Open the project and select "Reopen in Container" when prompted (requires the [Dev Containers](https://marketplace.visualstudio.com/items?itemName=ms-vscode-remote.remote-containers) extension).
+
+**Docker CLI:**
+
+```bash
+docker build -t qt-ts-translator -f .devcontainer/Dockerfile .
+docker run -it -v $(pwd):/workspace qt-ts-translator bash
+```
+
+Inside the container you have the full workflow available:
+
+```bash
+# Generate .ts files from your Qt project
+lupdate Application.pro -ts myapp_fr.ts myapp_es.ts
+
+# Translate .ts files
+python main.py --input /path/to/ts/files --output /path/to/output
+
+# Generate .qm binary files
+lrelease myapp_fr.ts myapp_es.ts
+```
+
+### Local Setup
+
+If you prefer to run without Docker:
 
 1. Ensure you have Python 3.8 or higher installed.
 
@@ -22,6 +50,13 @@ This tool automates translations using Google Translate (via [deep-translator](h
 
     ```bash
     pip install -r requirements.txt
+    ```
+
+3. Optionally install Qt linguist tools for `lupdate`/`lrelease`:
+
+    ```bash
+    # Debian/Ubuntu
+    sudo apt install qt6-l10n-tools
     ```
 
 ### Basic Usage
@@ -79,18 +114,6 @@ The tool automatically detects the target language for each `.ts` file by:
 2. Falling back to the filename pattern (e.g., `app_fr.ts`, `myproject_de_DE.ts`)
 
 Files whose language cannot be determined are skipped with a warning.
-
-### Qt Commands
-
-In Qt, follow these commands:
-
-1. Generate `.ts` files from your `.ui` files (if not using existing `.ts` files):
-
-    `lupdate Application.pro -ts myapp_fr.ts myapp_es.ts`
-
-2. Generate `.qm` files from the translated `.ts` files:
-
-    `lrelease myapp_fr.ts myapp_es.ts`
 
 ## Developer Notes
 
