@@ -1,11 +1,8 @@
-# QT_TS_Translator
+# Qt TS Translator
 
 ## Overview
-This tool was initially developed as a work project but found practical use beyond its original scope. Please note that the code hosted here might not reflect the most recent updates or improvements. The most up-to-date code resides in my organization's GitLab repository.
 
-The current, up-to-date version of this tool has evolved into a command-line interface (CLI) version integrated into our CI/CD pipeline. It runs translations on a schedule, ensuring that our applications are consistently updated with accurate translations. This evolved version addresses prior caveats related to Spanish and Chinese translations, providing a more robust and reliable solution.
-
-If you are seeking the latest version or wish to contribute, please open an issue or reach out for information on the current codebase available within my organization's infrastructure and boundaries.
+A general-purpose tool that automates translation of Qt Linguist `.ts` files using online translation APIs. Point it at any directory of `.ts` files and it will produce translated output files ready for use in your Qt application.
 
 ## Application Statement
 
@@ -13,11 +10,39 @@ Qt applications create translation files (`.ts` files) in XML format, later conv
 
 ## Purpose
 
-This tool automates translations by leveraging multiple online translation APIs. It aims to produce finalized `.ts` files for Qt applications.
+This tool automates translations using Google Translate (via [deep-translator](https://github.com/nidhaloff/deep-translator)). It aims to produce finalized `.ts` files for any Qt application.
 
 ## Usage
 
-### Prerequisites
+### Dev Container (Recommended)
+
+The project includes a dev container with Python, deep-translator, and Qt linguist tools (`lupdate`, `lrelease`, `lconvert`) pre-installed.
+
+**VS Code:** Open the project and select "Reopen in Container" when prompted (requires the [Dev Containers](https://marketplace.visualstudio.com/items?itemName=ms-vscode-remote.remote-containers) extension).
+
+**Docker CLI:**
+
+```bash
+docker build -t qt-ts-translator -f .devcontainer/Dockerfile .
+docker run -it -v $(pwd):/workspace qt-ts-translator bash
+```
+
+Inside the container you have the full workflow available:
+
+```bash
+# Generate .ts files from your Qt project
+lupdate Application.pro -ts myapp_fr.ts myapp_es.ts
+
+# Translate .ts files
+python main.py --input /path/to/ts/files --output /path/to/output
+
+# Generate .qm binary files
+lrelease myapp_fr.ts myapp_es.ts
+```
+
+### Local Setup
+
+If you prefer to run without Docker:
 
 1. Ensure you have Python 3.8 or higher installed.
 
@@ -27,37 +52,74 @@ This tool automates translations by leveraging multiple online translation APIs.
     pip install -r requirements.txt
     ```
 
-### Steps
-
-1. Run the tool:
+3. Optionally install Qt linguist tools for `lupdate`/`lrelease`:
 
     ```bash
-    python main.py
+    # Debian/Ubuntu
+    sudo apt install qt6-l10n-tools
     ```
 
-This executes the translation process within the project's environment.
+### Basic Usage
 
-### Qt Commands
+Translate all `.ts` files in the default directories:
 
-In Qt, follow these commands:
+```bash
+python main.py
+```
 
-1. Use the following command (if not using provided `.ts` files):
+### Custom Input/Output Directories
 
-    `lupdate Appplication.pro -ts t1_fr.ts t1_sp.ts`
-    
-    This generates .ts files from your .ui files.
+Point the tool at your own `.ts` files:
 
-2. Generate .qm files from .ts files:
+```bash
+python main.py --input /path/to/your/ts/files --output /path/to/output
+```
 
-    `lrelease t1_fr.ts t1_sp.ts`
+### Project-Specific Config
+
+If your project has technical terms, product codes, or abbreviations that should not be translated (or should be expanded before translation), create a JSON config file:
+
+```json
+{
+    "ignore_strings": ["USB", "API", "SDK", "HDMI"],
+    "transliterate_strings": {
+        "Hex": "Hexadecimal",
+        "Hi": "High",
+        "Lo": "Low"
+    }
+}
+```
+
+Then pass it with `--config`:
+
+```bash
+python main.py --config my_project_config.json
+```
+
+### All CLI Options
+
+```
+python main.py --help
+
+  --input   Input directory containing .ts files (default: ./translations/unfinished/)
+  --output  Output directory for translated .ts files (default: ./translations/finished/)
+  --config  Path to JSON config file with ignore_strings and transliterate_strings
+```
+
+### Language Detection
+
+The tool automatically detects the target language for each `.ts` file by:
+
+1. Reading the `language` attribute from the `<TS>` XML tag (e.g., `<TS version="2.1" language="fr_FR">`)
+2. Falling back to the filename pattern (e.g., `app_fr.ts`, `myproject_de_DE.ts`)
+
+Files whose language cannot be determined are skipped with a warning.
 
 ## Developer Notes
 
-- The tool uses nidhaloff/deep-translator API, which has a 5k character limit per API call.
-- Due to API calls, the program has a slow runtime. It adds a delay (`sleep(1)`) between string translations and (`sleep(random.uniform(7, 10))`) between each sublist.
-- Find sample `.ts` files in `.\translations\unfinished`. After execution, finished `.ts` files will appear in `\translations\finished`, containing translations in lines initially tagged as `<translation type="unfinished"></translation>`.
-- In cases of timeout or unavailable translations, English defaults.
-- Use constants.py to ignore or transliterate certain strings before translation for better results.
-- For Spanish and Chinese translations, the tool uses Microsoft Translator from Azure due to issues with deep_translator API. Store the API key in secrets.py. To use free translations, comment out lines utilizing str_to_spanish(string) and str_to_chinese(string).
-  - this may change once issues are resolved in `deep-translator`
+- The tool uses [nidhaloff/deep-translator](https://github.com/nidhaloff/deep-translator) which has a ~5k character limit per individual string. UI strings are typically well under this limit.
+- Due to API calls, the program has a slow runtime. It adds a random delay (`sleep(0.5-1.5s)`) between string translations to avoid rate limiting.
+- Sample `.ts` files are in `./translations/unfinished`. After execution, finished `.ts` files appear in `./translations/finished`, with translations in lines initially tagged as `<translation type="unfinished"></translation>`.
+- In cases of timeout or unavailable translations, English defaults are used.
+- Use `constants.py` or a `--config` JSON file to ignore or transliterate certain strings before translation.
 - Refer to the API documentation for details on the translation API.
